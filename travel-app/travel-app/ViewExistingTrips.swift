@@ -7,7 +7,7 @@ class ViewExistingTrips: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet weak var tripsView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
         tripsView.dataSource = self
         tripsView.delegate = self
     }
