@@ -37,8 +37,8 @@ class TripDetailsViewController: UIViewController {
 
         tripName.text = "Name: " + (trip.name ?? "N/A")
         tripDetails.text = "Details: " + (trip.details ?? "N/A")
-        startDate.text = "Departure:" + formatDate(trip.startDate)
-        endDate.text = "Arrival:" + formatDate(trip.endDate)
+        startDate.text = "Departure: " + formatDate(trip.startDate)
+        endDate.text = "Arrival: " + formatDate(trip.endDate)
        }
 
     /*
