@@ -11,13 +11,23 @@ import CoreData
 
 class ActivityController: UIViewController {
     
+    var trip: Trip!
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    @IBOutlet var Textfields:[UITextField]!
+    
     var activities:[Activity]?
+    @IBOutlet weak var activityTime: UIDatePicker!
+    @IBOutlet weak var actTitle: UITextField!
+    @IBOutlet weak var actLocation: UITextField!
+    @IBOutlet weak var actDetails: UITextField!
+    @IBOutlet weak var btnBack: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        guard let trip = trip else {
+               print("No trip data available!")
+               return
+           }
         fetchActivities()
     }
     
@@ -56,11 +66,17 @@ class ActivityController: UIViewController {
         }
     } //end saveData
     
+    func formatDateTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH-mm-ss" // Lowercase for correct date/time components
+        return formatter.string(from: date)
+    }
+    
     @IBAction func addActivity(_ sender: UIButton){
-        guard let activityTitle = Textfields[0].text,
-              let activityLocation = Textfields[1].text,
-              let activityTime = Textfields[2].text,
-              let activityDetails = Textfields[3].text else{
+        guard let activityTitle = actTitle.text,
+              let activityLocation = actLocation.text,
+              let activityDetails = actDetails.text,
+              let activityID: UUID = trip.id else{
             
             let alert = UIAlertController(title:"Error", message:"Title and location cannot be empty", preferredStyle: .alert)
             
@@ -70,22 +86,36 @@ class ActivityController: UIViewController {
         } //end else
         
         let activity = Activity(context:context)
+        activity.id = activityID
         activity.title = activityTitle
         activity.location = activityLocation
-        activity.time = activityTime
+        activity.time = formatDateTime(activityTime.date)
         activity.details = activityDetails
         
         activities?.append(activity)
         saveData()
-        Textfields.forEach{$0.text=""}
+        actTitle.text = ""
+        actLocation.text = ""
+        actDetails.text = ""
         print("New activity added")
     }//end addActivity
               
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
-        let activityTable = segue.destination as? ItinieraryTableViewController
-        activityTable?.activities = activities
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+//        let activityTable = segue.destination as? ItinieraryTableViewController
+//        activityTable?.activities = activities
+//    }
+ 
+    @IBAction func goBackToList(_ sender: Any) {
+        performSegue(withIdentifier: "backToActivityList", sender: self)
     }
-  
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "backToActivityList",
+           let destinationVC = segue.destination as? ActivitiesListViewController,
+           let tripToSend = trip {
+            destinationVC.trip = tripToSend
+        }
+    }
     
 }
 
