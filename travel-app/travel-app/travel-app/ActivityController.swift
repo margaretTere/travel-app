@@ -19,15 +19,12 @@ class ActivityController: UIViewController {
     @IBOutlet weak var actTitle: UITextField!
     @IBOutlet weak var actLocation: UITextField!
     @IBOutlet weak var actDetails: UITextField!
-    @IBOutlet weak var btnBack: UIButton!
+   
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let trip = trip else {
-               print("No trip data available!")
-               return
-           }
+        
         fetchActivities()
     }
     
@@ -105,9 +102,7 @@ class ActivityController: UIViewController {
 //        activityTable?.activities = activities
 //    }
  
-    @IBAction func goBackToList(_ sender: Any) {
-        performSegue(withIdentifier: "backToActivityList", sender: self)
-    }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "backToActivityList",

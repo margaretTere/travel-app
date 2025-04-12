@@ -3,7 +3,6 @@
 //  travel-app
 //
 
-//
 
 import UIKit
 
@@ -17,6 +16,7 @@ class TripDetailsViewController: UIViewController {
     @IBOutlet weak var endDate: UILabel!
     
     @IBOutlet weak var btnActivities: UIButton!
+    @IBOutlet weak var btnExpense: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,14 +61,29 @@ class TripDetailsViewController: UIViewController {
         return formatter.string(from: date)
     }
 
-
+    @IBAction func goToExpense(_ sender: UIButton) {
+        //performSegue(withIdentifier: "showExpense", sender: self)
+    }
+    
     @IBAction func goToActivities(_ sender: UIButton) {
-        performSegue(withIdentifier: "showActivities", sender: self)
+        //performSegue(withIdentifier: "showActivities", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showActivities",
            let destinationVC = segue.destination as? ActivitiesListViewController,
+           let tripToSend = trip {
+            destinationVC.trip = tripToSend
+        }
+        
+        if segue.identifier == "showExpense",
+           let destinationVC = segue.destination as? ExpenseTrackerViewController,
+           let tripToSend = trip {
+            destinationVC.trip = tripToSend
+        }
+        
+        if segue.identifier == "showCheckList",
+           let destinationVC = segue.destination as? CheckListViewController,
            let tripToSend = trip {
             destinationVC.trip = tripToSend
         }

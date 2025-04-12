@@ -3,7 +3,6 @@
 //  travel-app
 //
 
-//
 
 import UIKit
 import CoreData
@@ -16,23 +15,28 @@ class ActivitiesListViewController: UIViewController, UITableViewDataSource, UIT
     var activities: [Activity] = []
     @IBOutlet weak var activitiesTable: UITableView!
     @IBOutlet weak var btnAdd: UIButton!
-    @IBOutlet weak var btnBack: UIButton!
+    
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-     
-        
-        let context = appDelegate.persistentContainer.viewContext
-        
+        // Do any additional setup after loading the view.
         activitiesTable.dataSource = self
         activitiesTable.delegate = self
         activitiesTable.isScrollEnabled = true
         
-        fetchActivities(context)
+        //fetchActivities(context)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        fetchActivities(context)
+        activitiesTable.reloadData()
     }
     
     func fetchActivities(_ context: NSManagedObjectContext) {
@@ -50,6 +54,28 @@ class ActivitiesListViewController: UIViewController, UITableViewDataSource, UIT
         }
     }
 
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let itemToDelete = activities[indexPath.row]
+            
+            context.delete(itemToDelete)
+            activities.remove(at: indexPath.row)
+            
+            saveData()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            print("activity deleted")
+        }
+    }
+    
+    @objc func saveData() {
+        do {
+            try context.save()
+            print("Data saved successfully")
+        } catch {
+            print("Error while saving data: \(error.localizedDescription)")
+        }
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return activities.count
@@ -73,7 +99,7 @@ class ActivitiesListViewController: UIViewController, UITableViewDataSource, UIT
     */
 
     @IBAction func addActivity(_ sender: UIButton) {
-        performSegue(withIdentifier: "showAddActivity", sender: self)
+        //performSegue(withIdentifier: "showAddActivity", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -91,7 +117,5 @@ class ActivitiesListViewController: UIViewController, UITableViewDataSource, UIT
     }
     
     
-    @IBAction func goBack(_ sender: UIButton) {
-        performSegue(withIdentifier: "backToTripInfo", sender: self)
-    }
+    
 }

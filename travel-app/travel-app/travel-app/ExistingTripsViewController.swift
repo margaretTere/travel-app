@@ -1,9 +1,7 @@
 //
 //  ExistingTripsViewController.swift
 //  travel-app
-//
 
-//
 
 import UIKit
 import CoreData
@@ -15,24 +13,33 @@ class ExistingTripsViewController: UIViewController, UITableViewDataSource, UITa
     var trips: [Trip] = []
     @IBOutlet weak var tripsView: UITableView!
     
+    
+    
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        let context = appDelegate.persistentContainer.viewContext
-        
         tripsView.dataSource = self
         tripsView.delegate = self
         tripsView.isScrollEnabled = true
         
-        trips = fetchAllTrips(context)
+     //   trips = fetchAllTrips(context)
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            performSegue(withIdentifier: "showTripDetails", sender: self)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        trips = fetchAllTrips(context)
+        tripsView.reloadData()
     }
+    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//            performSegue(withIdentifier: "showTripDetails", sender: self)
+//    }
 
             
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -56,7 +63,28 @@ class ExistingTripsViewController: UIViewController, UITableViewDataSource, UITa
         return cell
     }
 
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let itemToDelete = trips[indexPath.row]
+            
+            context.delete(itemToDelete)
+            trips.remove(at: indexPath.row)
+            
+            saveData()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            print("trip deleted")
+        }
+    }
 
+    @objc func saveData() {
+        do {
+            try context.save()
+            print("Data saved successfully")
+        } catch {
+            print("Error while saving data: \(error.localizedDescription)")
+        }
+    }
     /*
     // MARK: - Navigation
 
@@ -78,4 +106,7 @@ class ExistingTripsViewController: UIViewController, UITableViewDataSource, UITa
             fatalError("Failed to fetch trips: \(error)")
         }
     }
+    
+    
+    
 }

@@ -1,7 +1,6 @@
 //
 //  CreateTripViewController.swift
 //  travel-app
-//
 
 //
 
@@ -53,6 +52,10 @@ class CreateTripViewController: UIViewController {
 
         // Save the product (use Core Data save method)
         appDelegate.saveContext()
+        tripName.text = ""
+        tripNotes.text = ""
+        startDate.date = Date()
+        endDate.date = Date()
     }
     
     func showErrorMessage(_ message: String) {
